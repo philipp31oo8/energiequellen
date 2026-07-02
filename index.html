@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energiequellen – Regenerativ & Nicht-regenerativ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --green: #2d7a4f;
+    --green-light: #e8f5ee;
+    --green-mid: #52a875;
+    --fossil: #7a3c1e;
+    --fossil-light: #f7ede7;
+    --fossil-mid: #c4673a;
+    --bg: #f5f3ef;
+    --ink: #1a1a1a;
+    --mid: #666;
+    --border: #ddd;
+    --white: #fff;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  header p {
+    margin-top: 0.6rem;
+    color: #aaa;
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+
+  .def-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    max-width: 960px;
+    margin: 1.5rem auto 0;
+    padding: 0 1rem;
+  }
+  @media (max-width: 600px) { .def-section { grid-template-columns: 1fr; } }
+
+  .def-box {
+    display: flex; gap: 0.8rem;
+    padding: 1.1rem 1.2rem;
+    border-radius: 12px;
+    border-left: 5px solid;
+  }
+  .regen-def { background: var(--green-light); border-color: var(--green); }
+  .fossil-def { background: var(--fossil-light); border-color: var(--fossil-mid); }
+
+  .def-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+  .def-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .def-text { font-size: 0.82rem; line-height: 1.6; color: #333; }
+  .def-examples {
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--mid);
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 0.55rem 1.2rem;
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: 99px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--mid);
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover { border-color: #999; color: var(--ink); }
+  .tab-btn.active-regen { border-color: var(--green); background: var(--green); color: white; }
+  .tab-btn.active-fossil { border-color: var(--fossil); background: var(--fossil); color: white; }
+  .tab-btn.active-compare { border-color: #444; background: #444; color: white; }
+  .tab-btn.active-nutzwert { border-color: #5a4fcf; background: #5a4fcf; color: white; }
+  .tab-btn.active-fazit { border-color: #6a4fcf; background: #6a4fcf; color: white; }
+
+  .panel { display: none; padding: 1.5rem 1rem 3rem; max-width: 960px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  
+  .criteria-strip {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .crit-badge {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    color: var(--mid);
+  }
+
+  /* --- ENERGY CARDS --- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid transparent;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+  .card.regen { border-top: 4px solid var(--green); }
+  .card.fossil { border-top: 4px solid var(--fossil-mid); }
+
+  .card-head {
+    padding: 1rem 1rem 0.6rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .card-icon { font-size: 1.6rem; }
+  .card-title { font-size: 1rem; font-weight: 700; }
+  .card-subtitle { font-size: 0.72rem; color: var(--mid); font-weight: 400; }
+
+  .card-body { padding: 0 1rem 1rem; }
+
+  .card-def {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #444;
+    margin-bottom: 0.75rem;
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.7rem; }
+  .tag {
+    font-size: 0.68rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .tag.regen { background: var(--green-light); color: var(--green); }
+  .tag.fossil { background: var(--fossil-light); color: var(--fossil); }
+
+  
+  .ratings { margin-top: 0.5rem; }
+  .rating-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+  .rating-label {
+    font-size: 0.68rem; color: var(--mid); width: 100px; flex-shrink: 0;
+    font-family: 'Outfit', sans-serif;
+  }
+  .bar-track {
+    flex: 1; height: 5px; background: #eee; border-radius: 99px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 99px;
+    transition: width 0.6s ease;
+  }
+  .bar-fill.regen { background: var(--green-mid); }
+  .bar-fill.fossil { background: var(--fossil-mid); }
+  .rating-val {
+    font-size: 0.68rem; font-family: 'Outfit', sans-serif;
+    color: var(--mid); width: 1.5rem; text-align: right;
+  }
+
+ 
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; max-width: 540px; width: 100%;
+    max-height: 85vh; overflow-y: auto; padding: 2rem;
+    position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: #eee; border: none; border-radius: 50%; width: 32px; height: 32px;
+    cursor: pointer; font-size: 1rem; font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal h2 { font-size: 1.3rem; margin-bottom: 0.4rem; }
+  .modal .modal-type { font-size: 0.75rem; font-family: 'Outfit', sans-serif; color: var(--mid); margin-bottom: 1rem; }
+  .modal-section { margin-top: 1rem; }
+  .modal-section h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid); margin-bottom: 0.4rem; }
+  .modal-section p { font-size: 0.88rem; line-height: 1.6; color: #333; }
+  .modal-section ul { padding-left: 1.2rem; }
+  .modal-section li { font-size: 0.85rem; line-height: 1.7; }
+  .modal-image {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    background: #f3f3f3;
+    border: 2px solid var(--green);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* --- COMPARE TAB --- */
+  .compare-grid { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  th { background: var(--ink); color: white; padding: 0.75rem 0.8rem; font-size: 0.8rem; font-weight: 600; text-align: left; }
+  td { padding: 0.65rem 0.8rem; font-size: 0.82rem; border-bottom: 1px solid #f0f0f0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+  .dot.g { background: var(--green); }
+  .dot.f { background: var(--fossil-mid); }
+
+  .score-cell {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+  }
+  .score-high { color: var(--green); }
+  .score-med { color: #c8862a; }
+  .score-low { color: var(--fossil); }
+
+ 
+  .nutzwert-wrap { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); }
+  .nutzwert-wrap h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .nutzwert-wrap p.desc { font-size: 0.83rem; color: var(--mid); margin-bottom: 1.2rem; line-height: 1.5; }
+
+  .nw-weights { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.7rem; margin-bottom: 1.5rem; }
+  .nw-weight-item label { font-size: 0.78rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
+  .nw-weight-item input[type=range] { width: 100%; accent-color: #5a4fcf; }
+  .nw-weight-val { font-family: 'Outfit', sans-serif; font-size: 0.75rem; color: var(--mid); }
+
+  .nw-btn {
+    background: #5a4fcf; color: white; border: none;
+    padding: 0.6rem 1.4rem; border-radius: 8px; font-family: inherit;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nw-btn:hover { background: #4a3fbf; }
+
+  .nw-results { margin-top: 1.5rem; }
+  .nw-result-row {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .nw-rank { font-family: 'Outfit', sans-serif; font-size: 0.8rem; color: var(--mid); width: 1.5rem; }
+  .nw-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
+  .nw-bar-track { flex: 2; height: 8px; background: #eee; border-radius: 99px; overflow: hidden; }
+  .nw-bar-fill { height: 100%; border-radius: 99px; background: #5a4fcf; transition: width 0.5s ease; }
+  .nw-score { font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; width: 3rem; text-align: right; }
+
+  .section-label {
+    font-size: 0.72rem; font-family: 'Outfit', sans-serif; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 0.3rem 0.7rem; border-radius: 99px; display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+  .section-label.regen { background: var(--green-light); color: var(--green); }
+  .section-label.fossil { background: var(--fossil-light); color: var(--fossil); }
+
+  .fazit-wrap { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); }
+  .fazit-wrap h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .fazit-wrap p.desc { font-size: 0.83rem; color: var(--mid); margin-bottom: 1.2rem; line-height: 1.5; }
+  .fazit-preview { padding: 0; background: transparent; border: none; }
+  .fazit-preview p { font-size: 0.9rem; line-height: 1.6; color: #2f3f35; white-space: pre-wrap; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Regenerative & Nicht-regenerative Energiequellen</h1>
+</header>
+
+<div class="def-section">
+  <div class="def-box regen-def">
+    <div class="def-icon">♻️</div>
+    <div>
+      <div class="def-title">Regenerative Energiequellen</div>
+      <div class="def-text">Energiequellen, die sich auf natürlichem Weg <strong>selbst erneuern</strong> und praktisch unerschöpflich sind. Sie basieren auf laufenden natürlichen Prozessen wie Sonneneinstrahlung, Wind oder Wasserkreislauf. Im Betrieb entstehen kaum oder keine CO₂-Emissionen. Sie gelten als Grundlage der <em>Energiewende</em>.</div>
+      
+    </div>
+  </div>
+  <div class="def-box fossil-def">
+    <div class="def-icon">⛽</div>
+    <div>
+      <div class="def-title">Nicht-regenerative Energiequellen</div>
+      <div class="def-text">Energiequellen, die <strong>nicht nachwachsen</strong> und über Millionen von Jahren entstanden sind. Ihr Vorrat ist endlich – einmal verbraucht, stehen sie nicht mehr zur Verfügung. Die Verbrennung fossiler Energieträger setzt CO₂ frei und ist Hauptursache des Klimawandels.</div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active-regen" onclick="showTab('regen', this)">♻️ Regenerativ</button>
+  <button class="tab-btn" onclick="showTab('fossil', this)">⛽ Nicht-regenerativ</button>
+  <button class="tab-btn" onclick="showTab('nutzwert', this)">📊 Nutzwertanalyse</button>
+  <button class="tab-btn" onclick="showTab('fazit', this)">📝 Fazit</button>
+</div>
+
+<!-- REGEN PANEL -->
+<div class="panel active" id="panel-regen">
+  <div class="criteria-strip">
+    <span style="font-size:0.75rem;color:var(--mid);align-self:center;margin-right:0.3rem;">Bewertungskriterien:</span>
+    <span class="crit-badge">Verfügbarkeit</span>
+    <span class="crit-badge">Speicherung</span>
+    <span class="crit-badge">Transportierbarkeit</span>
+    <span class="crit-badge">Versorgungssicherheit</span>
+    <span class="crit-badge">Wirkungsgrad</span>
+    <span class="crit-badge">Ökobilanz</span>
+  </div>
+  <div class="section-label regen">A) Regenerative Energiequellen</div>
+  <div class="cards" id="regen-cards"></div>
+</div>
+
+<!-- FOSSIL PANEL -->
+<div class="panel" id="panel-fossil">
+  <div class="criteria-strip">
+    <span style="font-size:0.75rem;color:var(--mid);align-self:center;margin-right:0.3rem;">Bewertungskriterien:</span>
+    <span class="crit-badge">Verfügbarkeit</span>
+    <span class="crit-badge">Speicherung</span>
+    <span class="crit-badge">Transportierbarkeit</span>
+    <span class="crit-badge">Versorgungssicherheit</span>
+    <span class="crit-badge">Wirkungsgrad</span>
+    <span class="crit-badge">Ökobilanz</span>
+  </div>
+  <div class="section-label fossil">B) Nicht-regenerative Energiequellen</div>
+  <div class="cards" id="fossil-cards"></div>
+</div>
+
+<!-- NUTZWERT PANEL -->
+<div class="panel" id="panel-nutzwert">
+  <div class="nutzwert-wrap">
+    <h2>Nutzwertanalyse – Energiewende</h2>
+    <p class="desc">Stellen Sie die Gewichtung der Bewertungskriterien ein und berechnen Sie, welche Energiequelle im Kontext der Energiewende am besten abschneidet.</p>
+
+    <div class="nw-weights" id="nw-sliders"></div>
+    <button class="nw-btn" onclick="calcNutzwert()">Berechnen</button>
+
+    <div class="nw-results" id="nw-results"></div>
+  </div>
+</div>
+
+<!-- FAZIT PANEL -->
+<div class="panel" id="panel-fazit">
+  <div class="fazit-wrap">
+    <h2>Fazit</h2>
+    <p class="desc"></p>
+
+    <div class="fazit-preview">
+      <p id="fazit-preview-text">Die Energiewende zielt darauf ab, fossile Energiequellen (Kohle, Erdöl, Erdgas) durch regenerative (Wind, Solar, Wasser) zu ersetzen, um CO₂-Emissionen zu senken.
+
+Regenerative Quellen sind unerschöpflich und klimafreundlich, aber oft wetterabhängig und schwer speicherbar. 
+Fossile Quellen sind zuverlässig und gut speicherbar, aber endlich und klimaschädlich.
+
+Die größten Herausforderungen: kein einzelner Energieträger reicht allein – es braucht einen Mix, bessere Speicher und mehr Netzausbau.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const CRITERIA = ['Verfügbarkeit', 'Speicherung', 'Transport', 'Versorgungssicherheit', 'Wirkungsgrad', 'Ökobilanz'];
+
+const SOURCES = [
+  {
+    id: 'wasser', name: 'Wasserkraft', icon: '💧', type: 'regen',
+    tags: ['Wasserkraftwerk', 'Fluss/Strömung', 'Staudamm'],
+    image: 'wasserkraftwerk.jpg',
+    scores: [4, 5, 2, 5, 4, 3],
+    definition: 'Wasserkraft nutzt die Energie fließenden Wassers und ist sehr zuverlässig, besonders bei großen Anlagen.',
+    steckbrief: {
+      verfuegbarkeit: 'Abhängig von Niederschlag und Geographie. In Bayern und alpinen Regionen gut, in Norddeutschland kaum nutzbar.',
+      speicherung: 'Pumpspeicherkraftwerke ermöglichen hervorragende Energiespeicherung – die flexibelste Form der Wasserkraft.',
+      transport: 'Strom muss via Leitungsnetz transportiert werden. Keine direkte Portabilität.',
+      sicherheit: 'Sehr zuverlässig, da steuerbar. Grundlastfähig.',
+      wirkungsgrad: 'Bis zu 90 % – einer der höchsten Wirkungsgrade aller Technologien.',
+      oeko: 'Eingriff in Flusssystem (Fischpopulation, Sedimenttransport), aber kein CO₂ im Betrieb.',
+      keywords: ['Wasserkraftwerk', 'Großprojekte']
+    }
+  },
+  {
+    id: 'wind', name: 'Windkraft', icon: '🌬️', type: 'regen',
+    tags: ['Windrad', 'Onshore', 'Offshore'],
+    image: 'Windrad-Windenergie.webp',
+    scores: [3, 2, 2, 3, 3, 4],
+    definition: 'Windkraft gewinnt Energie aus dem Wind und ist eine saubere, aber wetterabhängige Quelle.',
+    steckbrief: {
+      verfuegbarkeit: 'Fluktuierend – abhängig von Windstärke. Offshore gleichmäßiger als Onshore. Windatlas zeigt regionale Unterschiede.',
+      speicherung: 'Schwierig: Strom muss sofort verbraucht oder in Speicher (z.B. Batterien, Power-to-Gas) umgewandelt werden.',
+      transport: 'Netzinfrastruktur nötig, v.a. für Nordsee-Offshore-Strom nach Süddeutschland (Stromautobahnen).',
+      sicherheit: 'Wetterabhängig, daher allein nicht grundlastfähig. Im Mix mit anderen Quellen gut.',
+      wirkungsgrad: 'Ca. 35–45 % (onshore), bis 50 % (offshore). Betz-Grenze: max. 59,3 %.',
+      oeko: 'Kein CO₂ im Betrieb. Diskussion um Vogelschlag, Lärm und Landschaftsbild. 10-H-Regel (Bayern) schränkt Ausbau ein.',
+      keywords: ['Wettereinflüsse', 'Off-Shore-Anlagen', 'Anwohnerproteste']
+    }
+  },
+  {
+    id: 'solar', name: 'Photovoltaik', icon: '☀️', type: 'regen',
+    tags: ['Solarmodule', 'Sonnenstrahlung'],
+    image: 'Photovoltaik.jpg',
+    scores: [3, 2, 2, 3, 3, 4],
+    definition: 'Photovoltaik wandelt Sonnenlicht direkt in Strom um und wird vor allem im Alltag immer wichtiger.',
+    steckbrief: {
+      verfuegbarkeit: 'Nur tagsüber, saisonal stark schwankend. Im Sommer deutlich mehr als im Winter.',
+      speicherung: 'Heimspeicher (Li-Ionen) verbreitet sich. Netzebene: noch begrenzt skalierbar.',
+      transport: 'Modulare Stromerzeugung möglich (Eigenverbrauch). Einspeisung ins Netz via Smart Grid.',
+      sicherheit: 'Nicht grundlastfähig. Ergänzt andere Quellen gut (Solar + Wind = gute Kombination).',
+      wirkungsgrad: 'Monokristallin: 20–24 %. Herstellungskosten sinken stark, Einspeisevergütung (EEG) sinkt.',
+      oeko: 'Sehr geringe CO₂-Emissionen im Betrieb. Herstellung energieintensiv (Silizium). Recycling wächst.',
+      keywords: []
+    }
+  },
+  {
+    id: 'solarthermie', name: 'Solarthermie', icon: '🌡️', type: 'regen',
+    tags: ['Wärmespeicher', 'Wärmespeicher'],
+    image: 'solarthermie.jpeg',
+    scores: [3, 3, 1, 3, 3, 5],
+    definition: 'Solarthermie nutzt die Sonne zur Erwärmung von Wasser oder Gebäuden und ist besonders effizient bei Wärme.',
+    steckbrief: {
+      verfuegbarkeit: 'Wärme direkt aus Sonnenstrahlung. Saisonal abhängig, aber Warmwasserspeicher puffern gut.',
+      speicherung: 'Warmwasserspeicher effizient. Saisonale Wärmespeicher möglich.',
+      transport: 'Kaum transportierbar – lokale Nutzung (Gebäudeheizung). Fernwärmenetz bei größeren Anlagen.',
+      sicherheit: 'Ergänzt konventionelle Heizung gut. Allein nicht ausreichend.',
+      wirkungsgrad: 'Thermischer Wirkungsgrad bis 70 % – besser als PV für Wärme.',
+      oeko: 'Beste Ökobilanz unter den Solartechnologien. Kein CO₂ im Betrieb, geringe Materialintensität.',
+      keywords: ['Warmwasser', 'Einsparungsmöglichkeiten', 'Sonnenkollektoren', 'Kombination Solar-PV']
+    }
+  },
+  {
+    id: 'biomasse', name: 'Biomasse', icon: '🌿', type: 'regen',
+    tags: ['Biogasanlage', 'Hackschnitzel', 'CO₂-neutraler Kreislauf'],
+    image: 'Biomasse.jpg',
+    scores: [4, 5, 4, 4, 3, 2],
+    definition: 'Biomasse erzeugt Energie aus organischen Stoffen und kann gespeichert und flexibel genutzt werden.',
+    steckbrief: {
+      verfuegbarkeit: 'Gut planbar – Biomasse lager- und speicherbar. Konkurrenz: Nahrungsmittelproduktion vs. Energiepflanzen.',
+      speicherung: 'Hervorragend: Biomasse = natürlicher Energiespeicher. Biogas kann in bestehende Gasnetze eingespeist werden.',
+      transport: 'Biomasse physisch transportierbar. Biogas via Gasnetz. Vorteil gegenüber Strom bei langen Distanzen.',
+      sicherheit: 'Sehr hoch – steuerbar, grundlastfähig. Flexibler Einsatz je nach Bedarf.',
+      wirkungsgrad: 'Ca. 35–40 % (elektrisch). Besser bei Kraft-Wärme-Kopplung (bis 85 %).',
+      oeko: 'CO₂-neutral theoretisch (Kreislauf), aber Anbaufläche, Dünger, Methanemissionen problematisch.',
+      keywords: ['Biogasanlage', 'Hackschnitzel', 'Biomasse-Kraftwerk', 'CO₂-Bilanz']
+    }
+  },
+  {
+    id: 'geo', name: 'Geothermie', icon: '🌋', type: 'regen',
+    tags: ['Erdwärme', 'Wärmepumpen'],
+    image: 'geothermie.webp',
+    scores: [3, 4, 1, 5, 3, 5],
+    definition: 'Geothermie nutzt die Wärme aus dem Erdinneren und ist eine sehr konstante und robuste Energiequelle.',
+    steckbrief: {
+      verfuegbarkeit: 'Ortsgebunden – nicht überall nutzbar. Bayern (Molassebecken) und Island ideal. Mikrobeben möglich.',
+      speicherung: 'Kontinuierliche Wärmelieferung – kein Speicher nötig. Sehr konstant.',
+      transport: 'Nicht transportierbar. Nur lokale/regionale Nutzung (Nah- und Fernwärme).',
+      sicherheit: 'Sehr hoch – wetterunabhängig, grundlastfähig. Eines der verlässlichsten EE-Systeme.',
+      wirkungsgrad: 'Elektrisch: ca. 15–20 % (Hochtemperatur). Als Wärme: sehr effizient.',
+      oeko: 'Fast kein CO₂ im Betrieb. Risiko: induzierte Seismizität (Staufen-Katastrophe). Insgesamt sehr gut.',
+      keywords: ['Geothermieatlas', 'Mikrobeben', 'Island', 'oberflächennahe Geothermie']
+    }
+  },
+  {
+    id: 'kohle', name: 'Kohle', icon: '🪨', type: 'fossil',
+    tags: ['Steinkohle', 'Braunkohle', 'Kraftwerke', 'CO₂-Emissionen'],
+    image: 'kohlekraft.png',
+    scores: [4, 5, 4, 3, 2, 1],
+    definition: 'Kohle ist ein fossiler Energieträger mit hoher Verfügbarkeit, aber sehr schlechter Umweltbilanz.',
+    steckbrief: {
+      verfuegbarkeit: 'Weltweit verfügbar. Deutschland: Braunkohle noch vorhanden, Steinkohleimport. Förderung rückläufig.',
+      speicherung: 'Perfekt – lagerfähig über lange Zeiträume ohne Verlust.',
+      transport: 'Gut transportierbar (Bahn, Schiff). Tagebau ortsfest.',
+      sicherheit: 'Sehr hoch – planbar, grundlastfähig. Aber politisch: Kohleausstieg 2038 (Deutschland).',
+      wirkungsgrad: 'Moderne Kraftwerke: ca. 45 %. Ältere: deutlich weniger.',
+      oeko: 'Sehr schlecht: höchste CO₂-Emissionen aller Energieträger. Tagebau = massive Landschaftszerstörung.',
+      keywords: ['Kohleförderung', 'Kohleausstieg', 'CO₂-Problematik', 'Braunkohle', 'Tagebau']
+    }
+  },
+  {
+    id: 'erdoel', name: 'Erdöl', icon: '🛢️', type: 'fossil',
+    tags: ['Raffinerien', 'Pipelines', 'Bohrturm'],
+    image: 'erdoel.png',
+    scores: [4, 5, 5, 2, 3, 1],
+    definition: 'Erdöl ist ein sehr gut transportierbarer Energieträger, aber stark umweltbelastend und geopolitisch abhängig.',
+    steckbrief: {
+      verfuegbarkeit: 'Global verfügbar, aber ungleich verteilt (OPEC-Länder). Geopolitisch abhängig.',
+      speicherung: 'Hervorragend lagerfähig. Strategische Reserven möglich.',
+      transport: 'Bestes aller Energieträger: Pipelines, Tanker, LKW. Globaler Handel gut entwickelt.',
+      sicherheit: 'Hohe geopolitische Abhängigkeit (OPEC, Russland). Preisschwankungen erheblich.',
+      wirkungsgrad: 'Verbrennungsmotor: ca. 25–35 %. Raffinerieprozess: energieintensiv.',
+      oeko: 'Sehr schlecht: CO₂, Unfälle (Tanker, Pipeline), Fracking-Schäden, Plastikproblem.',
+      keywords: ['Erdölförderung', 'Fracking', 'OPEC', 'Kunststoffe', 'Pipelines']
+    }
+  },
+  {
+    id: 'erdgas', name: 'Erdgas', icon: '🔥', type: 'fossil',
+    tags: ['Gasturbine', 'Heizung', 'Gasvorkommen'],
+    image: 'erdgas.webp',
+    scores: [4, 5, 4, 3, 4, 2],
+    definition: 'Erdgas ist ein fossiler Brennstoff mit guter Speichermöglichkeit und relativ hoher Effizienz.',
+    steckbrief: {
+      verfuegbarkeit: 'Global verfügbar, aber politisch abhängig (Russland, Katar). Durch LNG diversifizierter.',
+      speicherung: 'Unterirdische Gasspeicher sehr effizient. Saisonale Speicherung gut möglich.',
+      transport: 'Pipelines ideal für Europa. LNG-Tanker für interkontinentalen Transport.',
+      sicherheit: 'Besser als Öl, aber Ukraine-Krieg zeigte Verwundbarkeit. Ausbau LNG-Terminals.',
+      wirkungsgrad: 'Gasturbine: ~50 %. Gas-und-Dampf-Kombikraftwerk (GuD): bis 60 % – sehr effizient.',
+      oeko: 'Weniger CO₂ als Kohle, aber Methanverluste bei Förderung und Transport problematisch.',
+      keywords: ['Rohstoff Erdgas', 'Heizung', 'Gasvorkommen', 'Gasturbine', 'politische Stabilität']
+    }
+  },
+  {
+    id: 'kernenergie', name: 'Kernenergie', icon: '☢️', type: 'fossil',
+    tags: ['Atomkraftwerk', 'Radioaktivität'],
+    image: 'kernenergie.jpeg',
+    scores: [3, 3, 1, 4, 4, 2],
+    definition: 'Kernenergie liefert viel Energie aus wenig Brennstoff, bringt aber große Sicherheits- und Abfallprobleme mit sich.',
+    steckbrief: {
+      verfuegbarkeit: 'Uran weltweit verfügbar. Reichweite bei aktuellem Verbrauch: ca. 100–200 Jahre. Deutlich länger mit Brutreaktoren.',
+      speicherung: 'Uranbrennstäbe gut lagerbar. Atommüll: radioaktiver Abfall auf Jahrtausende ungeklärt (Endlagersuche).',
+      transport: 'Brennstäbe transportierbar (streng reguliert). Strom über Netz. Radioaktivität = Sicherheitsrisiko.',
+      sicherheit: 'Im Normalbetrieb sehr zuverlässig. Risiko: Unfälle (Tschernobyl, Fukushima). Deutschland: Ausstieg 2023.',
+      wirkungsgrad: 'Ca. 33–35 % (thermisch). Aber sehr hohe Energiedichte des Brennstoffs.',
+      oeko: 'Kein CO₂ im Betrieb, aber ungelöstes Endlagerproblem. Friedliche vs. militärische Nutzung.',
+      keywords: ['Reichweite', 'radioaktive Strahlung', 'Betriebssicherheit', 'Endlagerstätte', 'Ausstieg']
+    }
+  }
+];
+
+const WEIGHTS = { 'Verfügbarkeit': 20, 'Speicherung': 15, 'Transport': 10, 'Versorgungssicherheit': 20, 'Wirkungsgrad': 15, 'Ökobilanz': 20 };
+
+function renderCards() {
+  const regen = document.getElementById('regen-cards');
+  const fossil = document.getElementById('fossil-cards');
+  SOURCES.forEach(s => {
+    const el = document.createElement('div');
+    el.className = `card ${s.type}`;
+    el.onclick = () => openModal(s);
+    const tagClass = s.type;
+    const bars = CRITERIA.map((c, i) => `
+      <div class="rating-row">
+        <span class="rating-label">${c}</span>
+        <div class="bar-track"><div class="bar-fill ${tagClass}" style="width:${s.scores[i]*20}%"></div></div>
+        <span class="rating-val">${s.scores[i]}/5</span>
+      </div>`).join('');
+    el.innerHTML = `
+      <div class="card-head">
+        <span class="card-icon">${s.icon}</span>
+        <div>
+          <div class="card-title">${s.name}</div>
+          <div class="card-subtitle">${s.type === 'regen' ? 'Regenerativ' : 'Nicht-regenerativ'}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="tag-row">${s.tags.map(t => `<span class="tag ${tagClass}">${t}</span>`).join('')}</div>
+        <div class="ratings">${bars}</div>
+        
+      </div>`;
+    (s.type === 'regen' ? regen : fossil).appendChild(el);
+  });
+}
+
+function openModal(s) {
+  const sb = s.steckbrief;
+  const definitionSection = s.definition
+    ? `<div class="modal-section"><h3>Definition</h3><p>${s.definition}</p></div>`
+    : '';
+
+  document.getElementById('modal-body').innerHTML = `
+    <h2>${s.icon} ${s.name}</h2>
+    <div class="modal-type">${s.type === 'regen' ? '♻️ Regenerative Energiequelle' : '⛽ Nicht-regenerative Energiequelle'}</div>
+    <img class="modal-image" src="${s.image || ''}" alt="Bild von ${s.name}" style="border-color:${s.type === 'regen' ? 'var(--green)' : 'var(--fossil-mid)'}" onerror="this.style.display='none'">
+    ${definitionSection}
+    ${[
+      ['Verfügbarkeit & Reichweite', sb.verfuegbarkeit],
+      ['Speicherung', sb.speicherung],
+      ['Transportierbarkeit', sb.transport],
+      ['Versorgungssicherheit', sb.sicherheit],
+      ['Wirkungsgrad', sb.wirkungsgrad],
+      ['Ökobilanz', sb.oeko],
+    ].map(([t, v]) => `<div class="modal-section"><h3>${t}</h3><p>${v}</p></div>`).join('')}`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal') || e.currentTarget.classList.contains('modal-close')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+function renderTable() {
+  const tbody = document.querySelector('#compare-table tbody');
+  SOURCES.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="dot ${s.type === 'regen' ? 'g' : 'f'}"></span><strong>${s.name}</strong></td>
+      <td style="font-size:0.75rem;color:var(--mid)">${s.type === 'regen' ? 'Regenerativ' : 'Fossil/Nuklear'}</td>
+      ${s.scores.map(v => `<td class="score-cell ${v >= 4 ? 'score-high' : v === 3 ? 'score-med' : 'score-low'}">${v}/5</td>`).join('')}`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderSliders() {
+  const container = document.getElementById('nw-sliders');
+  Object.entries(WEIGHTS).forEach(([k, v]) => {
+    const d = document.createElement('div');
+    d.className = 'nw-weight-item';
+    d.innerHTML = `
+      <label>${k}</label>
+      <input type="range" min="0" max="100" value="${v}" id="w_${k}" oninput="document.getElementById('wv_${k}').textContent=this.value+'%'">
+      <span class="nw-weight-val" id="wv_${k}">${v}%</span>`;
+    container.appendChild(d);
+  });
+}
+
+function calcNutzwert() {
+  const weights = {};
+  Object.keys(WEIGHTS).forEach(k => {
+    weights[k] = parseInt(document.getElementById(`w_${k}`).value);
+  });
+  const total = Object.values(weights).reduce((a, b) => a + b, 0);
+
+  const results = SOURCES.map(s => {
+    const score = CRITERIA.reduce((sum, c, i) => sum + s.scores[i] * (weights[c] / total), 0);
+    return { name: s.name, icon: s.icon, type: s.type, score };
+  }).sort((a, b) => b.score - a.score);
+
+  const maxScore = results[0].score;
+  const container = document.getElementById('nw-results');
+  container.innerHTML = `<h3 style="font-size:0.85rem;margin-bottom:1rem;color:var(--mid)">Ergebnisse (gewichtet, Summe = ${total}%)</h3>`;
+  results.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'nw-result-row';
+    div.innerHTML = `
+      <span class="nw-rank">${i + 1}.</span>
+      <span class="nw-name">${r.icon} ${r.name}</span>
+      <div class="nw-bar-track"><div class="nw-bar-fill" style="width:${(r.score/maxScore)*100}%;background:${r.type==='regen'?'var(--green)':'var(--fossil-mid)'}"></div></div>
+      <span class="nw-score">${r.score.toFixed(2)}</span>`;
+    container.appendChild(div);
+  });
+}
+
+function updateFazitPreview() {
+  document.getElementById('fazit-preview-title').textContent = FAZIT.title;
+  document.getElementById('fazit-preview-text').textContent = FAZIT.text;
+}
+
+function showTab(tab, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
+  document.getElementById('panel-' + tab).classList.add('active');
+  const classMap = { regen: 'active-regen', fossil: 'active-fossil', compare: 'active-compare', nutzwert: 'active-nutzwert', fazit: 'active-fazit' };
+  btn.classList.add(classMap[tab]);
+}
+
+renderCards();
+renderSliders();
+updateFazitPreview();
+</script>
+</body>
+</html>
